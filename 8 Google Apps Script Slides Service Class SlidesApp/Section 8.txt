@@ -1,0 +1,254 @@
+﻿#1
+function makeSlides() {
+   const slides = SlidesApp.create('New Name');
+   Logger.log(slides);
+ }
+  function selSlides(){
+   const id = '1Bk1dn81pkgtePNrUVaMGHilN-PIDj7MAzrSGlkrDLt8';
+   const slides = SlidesApp.openById(id);
+   Logger.log(slides.getName());
+ }
+
+
+
+
+#2
+function addaSlide() {
+   const presentSlide = SlidesApp.getActivePresentation();
+   Logger.log(presentSlide);
+   presentSlide.addEditor('education2learning@gmail.com');
+   const layouts = presentSlide.getLayouts();
+   layouts.forEach((layout,index)=>{
+     Logger.log(layout.getLayoutName());
+     Logger.log(index);
+   })
+   const slide = presentSlide.appendSlide(layouts[6]);
+   slide.getBackground().setSolidFill('#00ff00');
+   Logger.log(slide);
+ } 
+  function newSlide(){
+   const id = '1Bk1dn81pkgtePNrUVaMGHilN-PIDj7MAzrSGlkrDLt8';
+   const presentSlide = SlidesApp.openById(id);
+   const layouts = presentSlide.getLayouts();
+   layouts.forEach((layout,index)=>{
+     Logger.log(layout.getLayoutName());
+     Logger.log(index);
+   })
+   const slide = presentSlide.appendSlide(layouts[6]);
+   slide.getBackground().setSolidFill('#ff0000');
+   Logger.log(slide);
+ }
+ 
+
+
+#3
+function updateSlides(){
+   const pres = SlidesApp.getActivePresentation();
+   const slides = pres.getSlides();
+   Logger.log(slides);
+   slides.forEach((slide,index)=>{
+     let myText = `This is slide #${index + 1}`;
+     let val = slide.insertTextBox(myText);
+     Logger.log(val);
+   })
+ }
+  function updateSlidesText(){
+   const pres = SlidesApp.getActivePresentation();
+   const slides = pres.getSlides();
+   //Logger.log(slides);
+   slides.forEach((slide,index)=>{
+     const els = slide.getPageElements();
+     Logger.log(els);
+     els.forEach((el)=>{
+       const val2 = el.asShape();
+       const textRange = val2.getText();
+       textRange.setText('UPDATED #'+index);
+       const textStyle = textRange.getTextStyle();
+       textStyle.setBackgroundColor(ranCol(),ranCol(),ranCol());
+       Logger.log(textRange.getTextStyle());
+     })
+   })
+ }
+ 
+ function ranCol(){
+   return Math.floor(Math.random()*255);
+ }
+
+
+#4
+function onOpen(){
+   const ui = SlidesApp.getUi();
+   ui.createMenu('adv')
+   .addItem('addSlide','addSlide')
+   .addToUi();
+ }
+  function addSlide(){
+   const pres = SlidesApp.getActivePresentation();
+   const curSlide = pres.getSelection();
+   const curPage = curSlide.getCurrentPage();
+   const mySlide = curPage.asSlide();
+   Logger.log(mySlide);
+   const newSlide = mySlide.duplicate();
+   const val1 = newSlide.insertTextBox('NEW ONE');
+   const val2 = mySlide.insertTextBox('OLD ONE');
+   val1.setLeft(200);
+   val2.setLeft(200);
+   Logger.log(newSlide);
+  }
+
+
+#5
+function onOpen(){
+   const ui = SlidesApp.getUi();
+   ui.createMenu('adv')
+   .addItem('addImage','addImage')
+   .addItem('remove','removeSlide')
+   .addToUi();
+ }
+  function removeSlide(){
+   const slide = SlidesApp.getActivePresentation().getSelection().getCurrentPage().asSlide();
+   slide.remove();
+  }
+ 
+ function addImage(){
+   const slide = SlidesApp.getActivePresentation().getSelection().getCurrentPage().asSlide();
+   Logger.log(slide)
+   //https://drive.google.com/file/d/13a074ZCrcfpMD_ZqeJWVcCIuWUOI9pUw/view?usp=sharing
+   const id = '13a074ZCrcfpMD_ZqeJWVcCIuWUOI9pUw';
+   const image = DriveApp.getFileById(id);
+   const myImage = slide.insertImage(image);
+   myImage.setLeft(200);
+   myImage.setTop(200);
+   myImage.scaleWidth(0.3);
+   myImage.scaleHeight(0.3);
+   myImage.sendToBack();
+   Logger.log(myImage);
+ }
+
+
+#6
+function onOpen(){
+   const ui = SlidesApp.getUi();
+   ui.createMenu('adv')
+   .addItem('addText','addMytext')
+   .addToUi();
+ }
+  function addMytext(){
+   const slide = SlidesApp.getActivePresentation().getSelection().getCurrentPage().asSlide();
+   const textShape = slide.insertShape(SlidesApp.ShapeType.TEXT_BOX,50,50,200,200);
+   const myShape = slide.insertShape(SlidesApp.ShapeType.SUN,20,20,100,100);
+   Logger.log(myShape);
+   const val1 = myShape.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
+   val1.sendToBack();
+   const textRange = textShape.getText();
+   Logger.log(textRange);
+   textRange.setText('Hello World');
+   const subRange = textRange.getRange(0,5);
+   Logger.log(subRange);
+   subRange.insertText(3,'MORE TEXT');
+   Logger.log(textRange.asString());
+ }
+
+
+#7
+function myLayouts(){
+   const slidePres = SlidesApp.getActivePresentation();
+   const layouts = slidePres.getLayouts();
+   layouts.forEach((layout,index)=>{
+     //Logger.log(layout);
+     const val = layout.getMaster();
+     //const textBox = val.insertTextBox('Layout #'+index);
+     //textBox.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
+     //textBox.sendToBack();
+     //textBox.setTitle('text box');
+     const shapes = val.getShapes();
+     shapes.forEach((shape)=>{
+       let shapeText = shape.getText().asString();
+       let boo = shapeText.includes('Layout');
+       if(boo){
+         shape.remove();
+       }
+     })
+     Logger.log(textBox);
+   })
+
+
+#8
+function slideMaker(){
+   const pres = SlidesApp.create('Slides '+myId());
+   const preID = pres.getId();
+   const folderID = '1tbiAxHrYkxBw-WtHWDFZN7OJxTSUpoAP';
+   const file = DriveApp.getFileById(preID);
+   DriveApp.getFolderById(folderID).addFile(file);
+   const layouts = pres.getLayouts();
+   const data = getDataSheet();
+   data.forEach((row)=>{
+     const newSlide = pres.appendSlide(layouts[0]);
+     const ranBackGround = '#'+Math.random().toString(16).substr(-6);
+     newSlide.getBackground().setSolidFill(ranBackGround,0.3);
+     const pageElements = newSlide.getPageElements();
+     pageElements[0].asShape().getText().setText(row[0]);
+     pageElements[1].asShape().getText().setText(row[1]);
+   })
+   removeFirst(pres);
+ }
+  function testRemove(){
+   const id = '1skgW_ylbacSiXZ1v9IYJUuF2bhwXW7JyJ2tPjcw9WDs';
+   const pres = SlidesApp.openById(id);
+   const slides = pres.getSlides();
+   removeFirst(pres);
+ }
+  function removeFirst(pres){
+   const slides = pres.getSlides();
+   slides[0].remove();
+   Logger.log(slides);
+  }
+ 
+ function testData(){
+   const data = getDataSheet();
+   data.forEach((row)=>{
+    Logger.log(row[0]);
+    Logger.log(row[1]);
+   })
+  }
+ 
+  function selectMyLayout(){
+   const id = '1Bk1dn81pkgtePNrUVaMGHilN-PIDj7MAzrSGlkrDLt8';
+   const layouts = SlidesApp.openById(id).getLayouts();
+   layouts.forEach((layout,index)=>{
+     Logger.log(layout.getLayoutName() , index);
+   })
+  }
+ 
+  function getDataSheet(){
+   const id = '1TGUR8UPFabwIw1RkhqTMT4HT_JcaFX2cAwmucByjBRU';
+   const sheet = SpreadsheetApp.openById(id).getSheetByName('output');
+   const data = sheet.getDataRange().getValues().slice(1);
+   Logger.log(data);
+   return data;
+ }
+ 
+ 
+ function myId(){
+   const myDate = new Date().toISOString().slice(0,10);
+   return myDate;
+ }
+ 
+
+
+#9
+function myFunction() {
+   const presentation = SlidesApp.getActivePresentation();
+   Logger.log(presentation)
+   const slide = presentation.appendSlide();
+   Logger.log(slide);
+   const textBox = slide.insertTextBox('My Text');
+   textBox.setContentAlignment(SlidesApp.ContentAlignment.TOP);
+   const pageElements = slide.getPageElements();
+   Logger.log(pageElements);
+   pageElements.forEach((ele)=>{
+     Logger.log(ele);
+     const textRange = ele.asShape().getText().setText('Hello World');
+     Logger.log(textRange);
+   })
+ }

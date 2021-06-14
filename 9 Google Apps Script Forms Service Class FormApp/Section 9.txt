@@ -1,0 +1,169 @@
+﻿#1
+function createaForm() {
+   const form = FormApp.create('MyForm');
+   const item = form.addTextItem();
+   Logger.log(item);
+   Logger.log(form);
+ }
+  function updateMyForm(){
+   const id = '1ssoBcRbLB9x6CFYUR2wbhl-7K5GwnlQl3q2GDCgYJzk';
+   const form = FormApp.openById(id);
+   Logger.log(form);
+ 
+  }
+
+
+#2
+function updateMyForm(){
+   const id = '1ssoBcRbLB9x6CFYUR2wbhl-7K5GwnlQl3q2GDCgYJzk';
+   const form = FormApp.openById(id);
+    const item1 = form.addCheckboxItem();
+   item1.setChoices([
+       item1.createChoice('First'),
+       item1.createChoice('Second'),
+       item1.createChoice('Three')
+   ]);
+    const item2 = form.addMultipleChoiceItem();
+   item2.setTitle('Do you like Apps Script')
+     .setChoiceValues(['Yes','No','Maybe'])
+     .showOtherOption(true);
+   form.addPageBreakItem().setTitle('thanks');
+    const item3 = form.addGridItem();
+   item3.setTitle('rate your favorite Workspace Service')
+   .setRows(['Sheets','Docs','Forms'])
+   .setColumns(['Top','Average','Bad']);
+    form.addDateItem().setTitle('When did you first start with Apps Script?')
+    Logger.log(form);
+ }
+
+
+#3
+function myForm(){
+   const id = '1ssoBcRbLB9x6CFYUR2wbhl-7K5GwnlQl3q2GDCgYJzk';
+   const form = FormApp.openById(id);
+   //Logger.log(form.getTitle());
+   //Logger.log(form.getEditUrl());
+   //Logger.log(form.getSummaryUrl());
+   const items = form.getItems();
+   items.forEach((item)=>{
+     Logger.log(item.getType());
+     if(item.getType() =='TEXT'){
+       const textItem =item.asTextItem();
+       textItem.setTitle('NEW Title')
+       .setRequired(true)
+       .setHelpText('Say whatever');
+     }
+   })
+   //Logger.log(items);
+  }
+
+
+#4
+function myFormMaker(){
+   const form = FormApp.create('My Tester 2');
+   form.setIsQuiz(true);
+   const item1 = form.addListItem();
+   item1.setTitle('Do you like Apps Script');
+   item1.setChoices([
+     item1.createChoice('Yes',true),
+     item1.createChoice('No',false),
+     item1.createChoice('Unsure',false)
+   ]);
+   item1.setFeedbackForCorrect(
+     FormApp.createFeedback().setText('Yes').build());
+   item1.setFeedbackForIncorrect(
+     FormApp.createFeedback().setText('Oh No!!!').build()
+   );
+ 
+  }
+
+
+#5
+function myResponses(){
+   const id = '1m1WPu9Jhuq98ubBay7NN0uk9GgQSJILXKqDpill20wo';
+   const form = FormApp.openById(id);
+   //Logger.log(form.getPublishedUrl());
+   const responses = form.getResponses();
+   Logger.log(responses);
+   responses.forEach((res,index)=>{
+     const itemRes = res.getItemResponses();
+     itemRes.forEach((item)=>{
+       Logger.log(item.getItem().getTitle());
+       Logger.log(item.getResponse());
+     })
+   })
+ }
+
+
+#6
+function myResponses(){
+   const id = '1m1WPu9Jhuq98ubBay7NN0uk9GgQSJILXKqDpill20wo';
+   const form = FormApp.openById(id);
+   const responses = form.getResponses();
+   const sheet = makeaSheet();
+   responses.forEach((res,index)=>{
+     const itemRes = res.getItemResponses();
+     itemRes.forEach((item)=>{
+       Logger.log(item.getItem().getTitle());
+       Logger.log(item.getResponse());
+       sheet.appendRow([item.getItem().getTitle(),item.getResponse()]);
+     })
+   })
+ }
+  function makeaSheet(){
+   const ss = SpreadsheetApp.create('Form data');
+   const sheet = ss.insertSheet();
+   sheet.setName('Form Data');
+   sheet.appendRow(['Question','Response']);
+   return sheet;
+ }
+
+
+#7
+function makeQuiz(){
+   const form = FormApp.create('Quiz 1');
+   form.setIsQuiz(true);
+   for(let i=0;i<10;i++){
+     let val1 = randomNum(1,50);
+     let val2 = randomNum(1,50);
+     let ans = String(val1 + val2);
+     const item = form.addListItem();
+     const title = `${val1}+${val2}=`;
+     item.setTitle(title);
+     const myArr = [];
+     let boo = false;
+     for(let x=0;x<3;x++){
+       let temp = String(randomNum(1,50));
+       if((randomNum(1,30) < 10) && !boo){
+         myArr.push(item.createChoice(ans,true));
+         boo = true;
+       }
+       if(ans != temp){
+       myArr.push(item.createChoice(temp,false));
+       };
+     }
+     if(!boo){
+         myArr.push(item.createChoice(ans,true));
+     }
+     item.setChoices(myArr);
+     item.setFeedbackForCorrect(FormApp.createFeedback().setText(ans).build())
+   }
+ }
+ 
+ function randomNum(min,max){
+   min = Math.ceil(min);
+   max = Math.floor(max);
+   return Math.floor(Math.random()*(max-min+1)+min);
+ }
+ 
+
+
+#8
+function tester(){
+   const form = FormApp.create('new one');
+   form.setShuffleQuestions(true);
+   form.setProgressBar(true);
+   const item = form.addScaleItem();
+   item.setTitle('pick a number');
+   item.setBounds(1,10);
+  }

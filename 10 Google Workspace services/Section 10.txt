@@ -1,0 +1,290 @@
+﻿#1
+function listContacts(){
+   const contacts = ContactsApp.getContacts();
+   Logger.log(contacts);
+   contacts.forEach((contact)=>{
+     const person = contact.getPrimaryEmail();
+     if(person == 'tester@gmail.com'){
+       Logger.log(contact.getPrimaryEmail());
+       contact.setFullName('Laurence Tester');
+       contact.setNickname('test Account');
+     }
+   })
+ }
+  function addPerson(){
+   const contact = ContactsApp.createContact('Test','Account','tester@gmail.com');
+   Logger.log(contact);
+  }
+
+
+#2
+function updateText() {
+   const id = '19gio49trkgsiehrBcfHQkJhWJqXd-r8pGmyPgIahJgo';
+   const sheet = SpreadsheetApp.openById(id).getSheets()[0];
+   Logger.log(sheet.getName());
+   const data = sheet.getDataRange().getValues();
+   Logger.log(data);
+   data.forEach((str,index)=>{
+     const newStr = LanguageApp.translate(str,'en','es');
+     Logger.log(newStr);
+     const range = sheet.getRange((index+1),2);
+     range.setValue(newStr);
+   })
+ }
+ 
+
+
+#3
+function findMe() {
+   const mapFinder = Maps.newGeocoder().setBounds(40.699642, -74.021072, 40.877569, -73.908548).geocode('Main st');
+   Logger.log(mapFinder);
+   const results = mapFinder.results;
+   Logger.log(results);
+   const doc = DocumentApp.create('New Map 2');
+   const body = doc.getBody();
+   const map = Maps.newStaticMap();
+   for(let i=0;i<results.length;i++){
+     const result = results[i];
+     map.setMarkerStyle(null,null,i+1);
+     map.addMarker(result.geometry.location.lat,result.geometry.location.lng);
+     body.appendListItem(result.formatted_address)
+   }
+   const img = Utilities.newBlob(map.getMapImage(),'image/png');
+   body.appendImage(img);
+ 
+ }
+ 
+  https://developers.google.com/maps/coverage
+
+
+#4
+function test1() {
+   const user = Session.getActiveUser();
+   Logger.log(user.getEmail());
+ }
+  function test2(){
+   const val1 = 'Hello';
+   const val2 = 'World';
+   Logger.log('This is the message %s %s',val1,val2);
+ }
+  function test3(){
+   const val1 = 'Hello';
+   const val2 = 'World';
+   Logger.log('This is the message %s %s',val1,val2);
+   const val = Logger.getLog();
+   const doc = DocumentApp.create('my Log');
+   const body = doc.getBody();
+   body.appendParagraph(val);
+ }
+  function test4(){
+   const userEmail = Session.getActiveUser().getEmail();
+   Logger.log(userEmail);
+   const val1 = 'Hello';
+   const val2 = 'World';
+   Logger.log('This is the message %s %s',val1,val2);
+   const val = Logger.getLog();
+   MailApp.sendEmail(userEmail,'my log',val);
+ }
+ 
+
+
+#5
+function doGet(){
+   const myOutput = 'Hello World 2';
+   //return ContentService.createTextOutput(myOutput);
+   return ContentService.createTextOutput(myOutput).downloadAsFile('test.txt');
+  }
+
+
+#6
+function doGet(){
+   const html = HtmlService.createTemplateFromFile('temp');
+   html.test = 'HELLO WORLD';
+   return html.evaluate();
+ }
+  function test1(){
+   const temp = '<h1>Hello World 2</h1><?= new Date() ?>';
+   const html = HtmlService.createTemplate(temp);
+   Logger.log(html.evaluate().getContent());
+  }
+  function doGet1(){
+   const temp = '<h1>Hello World 2</h1><?= new Date() ?>';
+   const html = HtmlService.createTemplate(temp);
+   return html.evaluate();
+ }
+  function doGet2(){
+   const html = '<h1>Hello World 2</h1>';
+   return HtmlService.createHtmlOutput(html);
+ }
+  function doGet3(){
+   const html = HtmlService.createHtmlOutputFromFile('index');
+   Logger.log(html);
+   return html;
+ }
+ 
+  <!DOCTYPE html>
+ <html>
+   <head>
+     <base target="_top">
+   </head>
+   <body>
+     <h1>Hello</h1>
+     <p><?= new Date()?></p>
+     <p><?= test ?></p>
+   </body>
+ </html>
+  <!DOCTYPE html>
+ <html>
+   <head>
+     <base target="_top">
+     <style>
+       body {
+         background:red;
+       }
+       </style>
+   </head>
+   <body>
+     <h1>Hello</h1>
+     <p>Thank you for visiting</p>
+   </body>
+ </html>
+ 
+
+
+#7
+function doGet(e){
+   const html = HtmlService.createTemplateFromFile('para');
+   let allowed = 0;
+   if('id' in e.parameters){
+     allowed = e.parameters['id'][0];
+   }
+    html.data = allowed;
+   return html.evaluate();
+ 
+ }
+ 
+  function doGet1(){
+   const id = '19gio49trkgsiehrBcfHQkJhWJqXd-r8pGmyPgIahJgo';
+   const sheet = SpreadsheetApp.openById(id).getSheetByName('Sheet1');
+   const data = sheet.getDataRange().getValues();
+   Logger.log(data);
+   const html = HtmlService.createTemplateFromFile('output');
+   html.data = data;
+   return html.evaluate();
+ }
+  <script>
+   const datags = <?!= JSON.stringify(data) ?>;
+   console.log(datags);
+  </script>
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <base target="_top">
+   </head>
+   <body>
+ <div class="output"></div>
+     <script>
+       const output = document.querySelector('.output');
+       console.log(output);
+       output.textContent = datags;
+      </script>
+   </body>
+ </html>
+
+
+#8
+function doGet(){
+   const html = HtmlService.createTemplateFromFile('data');
+   return html.evaluate();
+ }
+  function testMessage(message){
+   Logger.log(message);
+   const id = '19gio49trkgsiehrBcfHQkJhWJqXd-r8pGmyPgIahJgo';
+   const sheet = SpreadsheetApp.openById(id).getSheetByName('message');
+   sheet.appendRow([message]);
+   return {'response':true,'message':message};
+  }
+  <!DOCTYPE html>
+ <html>
+   <head>
+     <base target="_top">
+   </head>
+   <body>
+ <div class="output"></div>
+ <input type='text' name='message' placeholder="your message" value='testing' >
+ <button>Send Data</button>
+     <script>
+       const output = document.querySelector('.output');
+       const message = document.querySelector('input');
+       const btn = document.querySelector('button');
+        btn.addEventListener('click',(e)=>{
+         console.log(message.value);
+         google.script.run.withSuccessHandler(onSuccess).testMessage(message.value);
+       })
+ 
+       function onSuccess(rep){
+         console.log(rep);
+       }
+       console.log(output);
+       </script>
+   </body>
+ </html>
+ 
+
+
+#9
+function pDoc() {
+   const docProp = PropertiesService.getDocumentProperties();
+   docProp.setProperty('myKey3','myValue4');
+   Logger.log(docProp.getProperties());
+   const props = docProp.getProperties();
+   Logger.log(props['myKey2']);
+   docProp.deleteProperty('myKey3');
+   Logger.log(docProp.getProperties());
+ }
+ function pUsr(){
+   const docProp = PropertiesService.getUserProperties();
+   docProp.setProperty('myKey5','myValue4');
+   Logger.log(docProp.getProperties());
+   const props = docProp.getProperties();
+   Logger.log(props['myKey2']);
+   docProp.deleteProperty('myKey3');
+   Logger.log(docProp.getProperties());
+  }
+  function pSci() {
+   const docProp = PropertiesService.getScriptProperties();
+   docProp.setProperty('myKey2','myValue4');
+   Logger.log(docProp.getProperties());
+   const props = docProp.getProperties();
+   Logger.log(props['myKey2']);
+   docProp.deleteProperty('myKey3');
+   Logger.log(docProp.getProperties());
+ }
+
+
+#10
+function getWebsite(){
+   const url = 'http://www.google.com/';
+   const rep = UrlFetchApp.fetch(url);
+   Logger.log(rep.getContentText());
+ }
+  function getData(){
+   const url = 'https://randomuser.me/api/?results=5';
+   const rep = UrlFetchApp.fetch(url);
+   const results = JSON.parse(rep);
+   const id = '19gio49trkgsiehrBcfHQkJhWJqXd-r8pGmyPgIahJgo';
+   const sheet = SpreadsheetApp.openById(id).getSheetByName('people');
+   //Logger.log(results.results);
+   const fileName = DriveApp.createFile('people.json',rep);
+   results.results.forEach((person)=>{
+     Logger.log(person.name);
+     sheet.appendRow([person.name.title,person.name.first,person.name.last]);
+   })
+  }
+ 
+ function doGet(){
+   const url = 'http://www.google.com/';
+   const rep = UrlFetchApp.fetch(url);
+   const html = rep.getContentText();
+   return HtmlService.createHtmlOutput(html);
+  }

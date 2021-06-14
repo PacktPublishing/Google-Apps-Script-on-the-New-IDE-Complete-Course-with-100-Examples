@@ -1,0 +1,449 @@
+﻿#1
+function doGet(e) {
+   let temp = 'index';
+   if ('page' in e.parameters) {
+     temp = e.parameters['page'][0]
+   }
+   try {
+     const html = HtmlService.createTemplateFromFile(temp);
+     html.data = { title: temp, e: e }
+     return html.evaluate();
+   }
+   catch (err) {
+     const html = HtmlService.createHtmlOutput('Page not found 404 Error:' + JSON.stringify(err));
+     return html;
+   }
+ }
+  function getScriptUrl() {
+   const url = ScriptApp.getService().getUrl();
+   return url;
+ }
+ 
+ 
+ function menu() {
+   const url = getScriptUrl();
+   let html = HtmlService.createHtmlOutputFromFile('menu').getContent();
+   html = html.replace(/\?page/g, url + '?page');
+   Logger.log(html);
+   return html;
+ }
+  function tester() {
+   const filename = 'index';
+   Logger.log(HtmlService.createHtmlOutputFromFile(filename));
+   Logger.log(HtmlService.createHtmlOutputFromFile(filename).getContent());
+ }
+  function include(filename) {
+   return HtmlService.createHtmlOutputFromFile(filename).getContent();
+ }
+  <script>
+   const datags = <?!= JSON.stringify(data) ?>;
+   console.log(datags);
+   //document.write(JSON.stringify(datags));
+ </script>
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <base target="_top">
+     <?!= include('style1') ?>
+   </head>
+   <body>
+     <h1>Hello this is page index</h1>
+     <?!= menu() ?>
+     <?!= include('randomWords') ?>
+     <?!= include('random2') ?>
+   </body>
+ </html>
+      <script>
+       function randomWords(){
+         let h1 = document.createElement('h1');
+         let title = datags.title.toUpperCase();
+         h1.textContent = `${title} Is this current page`;
+         document.body.append(h1);
+         let output = document.createElement('div');
+         document.body.append(output);
+         for(let i = 0;i<100;i++){
+           let val = Math.floor(Math.random()*8)+1;
+           output.innerHTML += Math.random().toString(36).substr(2,val) + ' ';
+         }
+       }
+   
+     </script>
+  <style>
+   body {
+     background:#eee;
+     color:#111;
+   }
+   ul{
+     list-style-type:none;
+     margin:0;
+     padding:0;
+     overflow:hidden;
+   }
+   li {
+     float:left;
+   }
+   li a{
+     display:block;
+     padding:5px;
+     background-color:#ccc;
+    }
+   </style>
+  <script>
+   for(let x=0;x<3;x++){
+   randomWords();
+   }
+ </script>
+  <div >
+   <ul style="background:red">
+     <li><a href="?page=index" target="_top">Home Page</a></li>
+    <li><a href="?page=index2" target="_top">Index 2</a></li>
+       <li><a href="?page=index3" target="_top">Index 3</a></li>
+       <li><a href="?page=index4" target="_top">Index 4</a></li>
+      </ul>
+   </div>
+   <hr>
+
+
+#2
+function onOpen(){
+   const ui = DocumentApp.getUi();
+   ui.createMenu('ADV')
+   .addItem('sideBar','mysidebar')
+   .addItem('dialog','mydialog')
+   .addToUi();
+ }
+  function mysidebar(){
+   const html = HtmlService.createTemplateFromFile('side').evaluate();
+   html.setTitle('Doc Updater');
+   DocumentApp.getUi().showSidebar(html);
+ }
+  function mydialog(){
+   const html = HtmlService.createTemplateFromFile('dialog').evaluate();
+   html.setWidth(600).setHeight(400);
+   DocumentApp.getUi().showModelessDialog(html,'Dialog');
+  
+ }
+ function removeEle(val){
+   const body = DocumentApp.getActiveDocument().getBody();
+   const paras = body.getParagraphs();
+   paras[val].setText('REMOVE');
+ }
+  function listEles(){
+   const body = DocumentApp.getActiveDocument().getBody();
+   Logger.log(body.getParagraphs());
+   const holder = [];
+   const paras = body.getParagraphs();
+   paras.forEach((p,index)=>{
+     const obj = {
+       type:p.getType(),
+       content:p.getText(),
+       index : index
+     }
+     holder.push(obj);
+   })
+   Logger.log(holder);
+   return holder;
+ }
+ 
+ function addtoDoc(data){
+   const body = DocumentApp.getActiveDocument().getBody();
+   const h = data.h1;
+   const p = data.p;
+   const header = body.appendParagraph(h);
+   const style = {};
+   style[DocumentApp.Attribute.HEADING] = DocumentApp.ParagraphHeading.HEADING1;
+   header.setAttributes(style);
+   const contentPara = body.appendParagraph(p);
+   const style1 = {};
+   style1[DocumentApp.Attribute.BACKGROUND_COLOR] = '#00ff00';
+   contentPara.setAttributes(style1);
+   return {success:true};
+ }
+ 
+ 
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <base target="_top">
+     <style>
+       input, textarea, label{
+         display:block;
+       }
+       body{
+         color:white;
+         background:#ddd;
+       }
+        </style>
+   </head>
+   <body>
+     <h1>Content Adder</h1>
+     <div >
+       <label for="heading">Add Heading</label>
+       <input id="heading" type="text" value="heading">
+      </div>
+     <div >
+       <label for="para">Add Heading</label>
+       <textarea id="para" ></textarea>
+      </div>
+      <div>
+        <button class="adder">Save to Doc</button>
+        </div>
+    <?!= HtmlService.createHtmlOutputFromFile('sidejs').getContent() ?>
+    </body>
+ </html>
+ 
+ 
+ 
+ 
+  <!DOCTYPE html>
+ <html>
+   <head>
+     <base target="_top">
+   </head>
+   <body>
+     <div class="output"></div>
+     <div>
+        <button class="adder">List page elements</button>
+        </div>
+        <?!= HtmlService.createHtmlOutputFromFile('dialogjs').getContent() ?> 
+   </body>
+ </html>
+ 
+  <script>
+   const btn = document.querySelector('.adder');
+   const contentHeader =document.querySelector('#heading');
+   const contentParagraph =document.querySelector('#para');
+   console.log(contentParagraph);
+   console.log(contentHeader);
+   btn.addEventListener('click',()=>{
+     const obj = {
+       'h1' : contentHeader.value,
+       'p' : contentParagraph.value
+     }
+   google.script.run.withSuccessHandler(success).addtoDoc(obj);
+      console.log('clicked');
+   })
+   function success(data){
+     console.log(data);
+   }
+   </script>
+ 
+  <script>
+   const btn = document.querySelector('.adder');
+   const output =document.querySelector('.output');
+    btn.addEventListener('click',loadList);
+    function loadList(){
+     google.script.run.withSuccessHandler(success).listEles();
+     console.log('clicked');
+   }
+   function success(data){
+     console.log(data);
+     output.innerHTML = '';
+     data.forEach((el)=>{
+       console.log(el);
+       if(el.content.length > 0){
+       let div = document.createElement('div');
+       div.textContent = el.content;
+       div.addEventListener('click',(e)=>{
+         console.log(el.index);
+         google.script.run.withSuccessHandler(loadList).removeEle(el.index);
+       })
+       output.append(div);
+       }
+     })
+   }
+   </script>
+ 
+
+
+#3
+function doGet(e) {
+   let email = Session.getActiveUser().getEmail();
+   try {
+     const html = HtmlService.createTemplateFromFile('quiz');
+     html.data = {
+       data: quizData(),
+       email: email
+     }
+     return html.evaluate();
+   }
+   catch (e) {
+     return HtmlService.createHtmlOutput('<h1>Not found</h1>');
+   }
+  }
+  function quizData() {
+   const id = '1IFBVT-uvXcHJTZIr4ENMlGZFvuHM6hBkisEyrbHAXvg';
+   const data = SpreadsheetApp.openById(id).getSheetByName('questions').getDataRange().getValues();
+   const headings = data[0];
+   const questions = data.slice(1);
+   const ques = [];
+   questions.forEach((el) => {
+     let obj = {};
+     headings.forEach((header, index) => {
+       obj[header.toLowerCase()] = el[index];
+     })
+     ques.push(obj);
+   })
+   return ques;
+ }
+ 
+  function addSheet(vals) {
+   const id = '1IFBVT-uvXcHJTZIr4ENMlGZFvuHM6hBkisEyrbHAXvg';
+   const sheet = SpreadsheetApp.openById(id).getSheetByName('results');
+   const headings = sheet.getDataRange().getValues()[0];
+   const holder = [];
+   for (x in headings) {
+     let output = (headings[x] in vals) ? vals[headings[x]] : '';
+     if (headings[x] == 'date') {
+       output = new Date();
+     }
+     holder.push(output);
+   }
+   sheet.appendRow(holder);
+   let lastRow = sheet.getLastRow();
+   return { obj: vals, headings: headings, row: lastRow };
+ }
+  <script>
+   const data = <?!= JSON.stringify(data) ?>;
+   console.log(data);
+  </script>
+ 
+ <!DOCTYPE html>
+ <html>
+  <head>
+   <base target="_top">
+   <style>
+     .ques {
+       font-size: 1.5em;
+       color: black;
+       font-family: arial;
+ 
+     }
+      .box {
+       padding: 10px;
+       border: 1px solid black;
+       margin: 5px;
+      }
+      label {
+       font-size: 0.7em;
+       color: #ddd;
+       padding: 2px;
+     }
+      .guideWord {
+       font-size: 0.9em;
+       padding: 10px;
+       color: #333;
+     }
+      button {
+       display: block;
+       width: 100%;
+       padding: 10px;
+       border-radius: 15px;
+       border: 1px solid black;
+     }
+      .userInfo {
+       width: 100%;
+       text-align: center;
+       background: black;
+     }
+      .userInfo input {
+       width: 70%;
+     }
+   </style>
+ </head>
+  <body>
+   <form class="questions">
+     <div class="userInfo">
+       <label for="email">Your Email</label>
+       <input type="email" id="email" name="email">
+         </div>
+       <div class="userInfo">
+         <label for="name">Your Name</label>
+         <input type="text" id="name" name="name" value="Laurence">
+         </div>
+   </form>
+   <?!= HtmlService.createHtmlOutputFromFile('quizjs').getContent() ?>
+ </body>
+  </html>
+  <script>
+   console.log('ready');
+   console.log(data.data);
+   data.data.sort(()=> .5 - Math.random());
+   console.log(data.data);
+   const questions = document.querySelector('.questions');
+   const myEmail = document.querySelector('#email');
+   const listQ = document.createElement('div');
+   const btn = document.createElement('button');
+   btn.textContent = 'Submit Quiz';
+   btn.setAttribute('type','submit');
+   questions.addEventListener('submit',subForm);
+   questions.append(listQ);
+   myEmail.value = data.email;
+   console.log(questions);
+   data.data.forEach((el)=>{
+     const li = document.createElement('div');
+     li.classList.add('box');
+     listQ.append(li);
+     genInput(el,li);
+     console.log(el);
+   })
+   questions.append(btn);
+ 
+   function genInput(el,li){
+     const mc = document.createElement('div');
+     li.append(mc);
+     const div1 = document.createElement('div');
+     div1.textContent = el.question;
+     div1.classList.add('ques');
+     mc.append(div1);
+     const div2 = document.createElement('div');
+     mc.append(div2);
+     const span1 = document.createElement('span');
+     div2.append(span1);
+     span1.classList.add('guideWord');
+     span1.textContent = 'Worst';
+     for( let i=1;i<6;i++){
+       const span = document.createElement('span');
+       const input = document.createElement('input');
+       if(i==1){
+         input.required = true;
+         //input.checked = true;
+       }
+       input.setAttribute('type','radio');
+       input.setAttribute('name',el.id);
+       input.setAttribute('value',i);
+       input.setAttribute('id',el.id+i);
+       div2.append(input);
+       const label = document.createElement('label');
+       label.setAttribute('for',el.id+i);
+       label.textContent = i;
+       div2.append(label);
+     }
+     const span2 = document.createElement('span');
+     div2.append(span2);
+     span2.classList.add('guideWord');
+     span2.textContent = 'Best';
+   }
+    function subForm(e){
+     e.preventDefault();
+     console.log('submit me');
+     const res = {};
+     res['name'] = document.querySelector('input[name="name"]').value;
+     res['email'] = document.querySelector('input[name="email"]').value;
+   const vals = questions.querySelectorAll('input:checked');
+   console.log(vals);
+   vals.forEach((i,index)=>{
+     res[i.name] = Number(i.value);
+   })
+   btn.disabled = true;
+   btn.style.backgroundColor = 'red';
+   btn.textContent = 'Saving......';
+     google.script.run.withSuccessHandler(onSuccess).addSheet(res);
+     console.log(res);
+   }
+   function onSuccess(e){
+     console.log(e);
+     questions.innerHTML = `Thank you for submiting your results.
+     Your results are in row ${e.row}`;
+    }
+ </script>

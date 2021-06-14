@@ -1,0 +1,108 @@
+﻿#1
+function doGet() {
+   const data = {
+     status :'success',
+     quotes : myData()
+   }
+   const output = JSON.stringify(data);
+   return ContentService.createTextOutput(output).setMimeType(ContentService.MimeType.JSON);
+}
+
+
+function myData(){
+ const id ='1JixK8u48QiCVY1Ozyd9Tt_eiISmQ_TFCWo6wjlV-msw';
+ const sheet = SpreadsheetApp.openById(id).getSheetByName('posts');
+ const rows = sheet.getDataRange().getValues();
+ const quotes = rows.slice(1);
+ return quotes;
+}
+
+
+
+
+
+
+const output = document.querySelector('div');
+const url = 'https://script.google.com/macros/s/*****-/exec';
+fetch(url).then(rep => rep.json()).then((data)=>{
+ console.log(data);
+ data.quotes.forEach((el)=>{
+   output.innerHTML += el[1] + '<br> ';
+ })
+})
+
+
+#2
+{
+   "timeZone": "America/New_York",
+   "dependencies": {},
+   "exceptionLogging": "STACKDRIVER",
+   "oauthScopes": [
+     "https://www.googleapis.com/auth/documents.currentonly",
+     "https://www.googleapis.com/auth/documents"
+   ],
+   "runtimeVersion": "V8",
+   "addOns": {
+     "common": {
+       "name": "Quotes",
+       "logoUrl": "https://discoveryvip.com/mathGame.png",
+       "layoutProperties": {
+         "primaryColor": "#2772ed"
+       },
+       "homepageTrigger": {
+         "runFunction": "onHomepage"
+       }
+     },
+     "docs": {}
+   }
+ }
+#3
+function onHomepage(e) {
+   return createSel(e);
+ }
+  function createSel(e) {
+   const hostApp = e['hostApp'];
+   const builder = CardService.newCardBuilder();
+   builder.addSection(CardService.newCardSection()
+     .addWidget(CardService.newButtonSet()
+       .addButton(CardService.newTextButton()
+         .setText('Add Quote')
+         .setOnClickAction(CardService.newAction().setFunctionName('addQuote'))
+         .setDisabled(false)
+       )
+     )
+   )
+   return builder.build();
+ }
+ 
+ function getQuotes() {
+   const url = 'https://script.google.com/macros/s/********hSieWqRKG_-/exec';
+   const rep = UrlFetchApp.fetch(url);
+   const myObj = JSON.parse(rep);
+   Logger.log(myObj);
+   Logger.log(myObj.quotes);
+   const val = Math.floor(Math.random() * myObj.quotes.length);
+   Logger.log(myObj.quotes[val]);
+   return myObj.quotes[val]
+ }
+ 
+ 
+ 
+ function addQuote() {
+   const doc = DocumentApp.getActiveDocument();
+   const body = doc.getBody();
+   const cursor = doc.getCursor();
+   const quoteData = getQuotes();
+   if (cursor) {
+     cursor.insertText(quoteData[1] + '\n ' + quoteData[0]);
+   } else {
+     const style = {};
+     style[DocumentApp.Attribute.HEADING] = DocumentApp.ParagraphHeading.HEADING1;
+     const para1 = body.appendParagraph(quoteData[1]); //quote
+     para1.setAttributes(style);
+     const style1 = {};
+     style1[DocumentApp.Attribute.HEADING] = DocumentApp.ParagraphHeading.NORMAL;
+     const para2 = body.appendParagraph(quoteData[0]); //author
+     para2.setAttributes(style1);
+   }
+  }

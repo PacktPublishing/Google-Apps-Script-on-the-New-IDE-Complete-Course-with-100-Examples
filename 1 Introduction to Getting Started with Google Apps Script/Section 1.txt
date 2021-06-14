@@ -1,0 +1,45 @@
+﻿function createaDoc() {
+ const doc = DocumentApp.create('Test New Doc 1');
+}
+
+
+
+
+function createaDoc() {
+ const doc = DocumentApp.create(VAL);
+}
+
+
+function doGet(){
+ return HtmlService.createHtmlOutputFromFile('index');
+}
+
+
+
+
+function doGet1(){
+ return HtmlService.createHtmlOutput('hello 2');
+}
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+ <head>
+   <base target="_top">
+   <style>
+     body {
+       background :red;
+     }
+     </style>
+ </head>
+ <body>
+   <h1>Hello World</h1>
+   <script>
+     console.log('test');
+   </script>
+ </body>
+</html>

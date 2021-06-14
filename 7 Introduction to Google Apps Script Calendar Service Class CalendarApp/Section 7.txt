@@ -1,0 +1,245 @@
+﻿#1
+function getMyCalendars(){
+   const cals = CalendarApp.getAllCalendars();
+   //Logger.log(cals);
+   const today = new Date();
+   cals.forEach((myCal)=>{
+     const myName = {
+       name: myCal.getName(),
+       id:myCal.getId(),
+       color :myCal.getColor(),
+       val:myCal.getEventsForDay(today)
+       };
+     Logger.log(myName);
+     Logger.log(myName.val.length);
+   })
+  }
+
+
+#2
+function getSomeCals(){
+   const cals0 = CalendarApp.getAllCalendars();
+   cals0.forEach((cal)=>{
+     Logger.log(cal.getId());
+   })
+   const cals1 = CalendarApp.getAllOwnedCalendars();
+   cals1.forEach((cal)=>{
+     Logger.log(cal.getName());
+   })
+   Logger.log('*****NAME*****');
+   const cals2 = CalendarApp.getCalendarsByName('test');
+   cals2.forEach((cal)=>{
+     Logger.log(cal.getName());
+   })
+   const calId = CalendarApp.getDefaultCalendar().getId();
+   Logger.log(calId);
+    const id = '662194ndtkusm80ivl7lql0rvc@group.calendar.google.com';
+   const cal1 = CalendarApp.getCalendarById(id);
+   Logger.log(cal1.getName());
+ 
+ }
+
+
+#3
+https://developers.google.com/apps-script/reference/calendar/color.html
+
+
+function makeCal(){
+ const cal = CalendarApp.createCalendar('New Calendar Today');
+ Logger.log(cal.getId());
+ cal.setColor('#00ff00');
+ cal.setDescription('this is a test calendar');
+ cal.setName('Updated Name');
+}
+
+
+function updateCal(){
+ const id = '6aq9ielvkjb2o1m56gkfnngd7o@group.calendar.google.com';
+ const cal = CalendarApp.getCalendarById(id);
+ Logger.log(cal.getDescription());
+ Logger.log(cal.getColor());
+ cal.setColor('#AB8B00');
+ cal.setHidden(false);
+}
+
+
+function delCal(){
+ const id = '6aq9ielvkjb2o1m56gkfnngd7o@group.calendar.google.com';
+ const cal = CalendarApp.getCalendarById(id);
+ cal.deleteCalendar();
+
+
+}
+
+
+#4
+function getMyEvents(){
+   const cal = CalendarApp.getDefaultCalendar();
+   Logger.log(cal.getName());
+   const start = new Date();
+   const end = new Date(start.getTime() + (1000*60*60*24*7));
+   Logger.log(start.getTime());
+   const events = cal.getEvents(start,end);
+   events.forEach((event)=>{
+     Logger.log(event.getTitle());
+     event.setColor("3");
+     Logger.log(event.getId());
+   })
+ }
+  function updateEvent(){
+   const id = '4mv0mgb8kobpmensaukrs5fh5j@google.com';
+   const event = CalendarApp.getEventById(id);
+   event.setGuestsCanModify(true); //Guest permissions
+   event.setDescription('new description');
+   event.setLocation('My Home');
+   //event.setMyStatus(CalendarApp.GuestStatus.NO);
+   event.setVisibility(CalendarApp.Visibility.PUBLIC);
+   event.setTag('test','yes');
+ }
+
+
+#5
+function makeEvents3(){
+   const cal = CalendarApp.getDefaultCalendar();
+   const today = new Date();
+   const futureDate = new Date(today.getTime() + (1000*60*60*24*4));
+   const endDate = new Date(today.getTime() + (1000*60*60*24*4)+(1000*60*60*2));
+   const opts = {
+     location : 'MY HOME',
+     guests : 'education2learning+1@gmail.com',
+     description : 'The party',
+     sendInvites: true
+   }
+   const rec = CalendarApp.newRecurrence().addWeeklyRule();
+   const event1 = cal.createAllDayEventSeries('Weekly Meet',today,rec);
+   const event2 = cal.createEventSeries('Series Weekly',futureDate,endDate,rec);
+   const event3 = cal.createEventSeries('Series Weekly',futureDate,endDate,rec,opts);
+  }
+ 
+ function makeEvents2(){
+   const cal = CalendarApp.getDefaultCalendar();
+   const today = new Date();
+   const futureDate = new Date(today.getTime() + (1000*60*60*24*2));
+   const endDate = new Date(today.getTime() + (1000*60*60*24*4)+(1000*60*60*6));
+   const opts = {
+     location : 'MY HOME',
+     guests : 'education2learning+1@gmail.com',
+     description : 'The party',
+     sendInvites: true
+   }
+   const event1 = cal.createEvent('My Next Test 2',futureDate,endDate)
+   event1.setColor('2');
+   const event2 = cal.createEvent('With Options',futureDate,endDate,opts);
+   event2.addGuest('education2learning+2@gmail.com');
+ }
+ 
+ function makeEvents(){
+   const cal = CalendarApp.getDefaultCalendar();
+   //cal.createEventFromDescription('test 1, Monday at 4pm');
+   const today = new Date();
+   const futureDate = new Date(today.getTime() + (1000*60*60*24*4));
+   const endDate = new Date(today.getTime() + (1000*60*60*24*5));
+   //const event1 = cal.createAllDayEvent('title',futureDate);
+   //event1.setColor("6");
+   //const event2 = cal.createAllDayEvent('One big event WEEK',today,futureDate);
+   //event2.setDescription('Wow that was a long event');
+   const opts = {
+     location : 'MY HOME',
+     guests : 'education2learning@gmail.com',
+     description : 'The party',
+     sendInvites: true
+   }
+   const event3 = cal.createAllDayEvent('New Party',futureDate,endDate,opts);
+   Logger.log(event3);
+ }
+
+
+#6
+function delEvents(){
+   const cal = CalendarApp.getDefaultCalendar();
+   const today = new Date();
+   const day = 1000*60*60*24;
+   const endDate = new Date(today.getTime() + (day*365));
+   const events = cal.getEvents(today,endDate);
+   Logger.log(events.length);
+   events.forEach((event)=>{
+     Logger.log(event);
+     event.deleteEvent();
+   })
+ }
+ 
+
+
+#7
+function addMyEvent(){
+   const cal = CalendarApp.getDefaultCalendar();
+   const today = new Date();
+   const myDay = 1000*60*60*24*3;
+   const start = new Date(today.getTime() + myDay + (1000*60*60*5));
+   const end = new Date(today.getTime() + myDay + (1000*60*60*8));
+   const event = cal.createEvent('TEST my Event',start,end);
+   event.addGuest('gappscourses+1@gmail.com');
+   event.addGuest('gappscourses+2@gmail.com');
+   event.addGuest('gappscourses+3@gmail.com');
+ }
+  function myGuests(){
+   const cal = CalendarApp.getDefaultCalendar();
+     const today = new Date();
+   const myDay = 1000*60*60*24*3;
+   const start = new Date(today.getTime() + myDay + (1000*60*60*5));
+   const events = cal.getEventsForDay(start);
+   events.forEach((event)=>{
+     let removeEmail = '';
+     let guests = event.getGuestList();
+     Logger.log(guests);
+     guests.forEach((guest)=>{
+       removeEmail = guest.getEmail();
+       let person = {
+       email : guest.getEmail(),
+       status : guest.getStatus(),
+       gstatus : guest.getGuestStatus(),
+       name:guest.getName(),
+       addGuest:guest.getAdditionalGuests()
+       }
+       Logger.log(person);
+     })
+     event.removeGuest(removeEmail);
+   })
+   //Logger.log(events);
+ }
+ 
+
+
+#8
+function makeaSheet(){
+   const ss = SpreadsheetApp.create('New Cals');
+   const sheet = ss.insertSheet();
+   sheet.setName('cals');
+   sheet.appendRow(['Start Time','End Time','ID','Title','Description']);
+   const cal = CalendarApp.getDefaultCalendar();
+   const today = new Date();
+   const day = 1000*60*60*24;
+   const end = new Date(today.getTime()+ (day*30));
+   const events = cal.getEvents(today,end);
+   Logger.log(events.length);
+   events.forEach((event)=>{
+     const arr = [];
+     arr.push(event.getStartTime());
+     arr.push(event.getEndTime());
+     arr.push(event.getId());
+     arr.push(event.getTitle());
+     arr.push(event.getDescription());
+     sheet.appendRow(arr);
+   })
+  }
+  function addRandomCals(){
+   const cal = CalendarApp.getDefaultCalendar();
+   const today = new Date();
+   const day = 1000*60*60*24;
+   for(let i=0;i<25;i++){
+     const randomDay = Math.floor(Math.random()*30);
+     const start = new Date(today.getTime()+ (randomDay*day));
+     const title = 'My Event #'+i;
+     const event = cal.createAllDayEvent(title,start);
+   }
+ }

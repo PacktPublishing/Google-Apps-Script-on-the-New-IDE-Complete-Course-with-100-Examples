@@ -1,0 +1,45 @@
+﻿#1
+function adder(){
+   const body = DocumentApp.getActiveDocument().getBody();
+   const tables = body.getTables();
+   const cells = ["A","B","C","D","E"];
+   tables[1].insertTableRow(1).appendTableCell('INSERTed');
+   tables[2].removeRow(2);
+   tables.forEach((table)=>{
+     //const tableRow = table.appendTableRow();
+     const tableRow = table.insertTableRow(2);
+     cells.forEach((cell)=>{
+     tableRow.appendTableCell('2' + cell);
+     })
+    
+   })
+ }
+  function tableData(){
+     const tables = DocumentApp.getActiveDocument().getBody().getTables();
+     tables.forEach((table,index)=>{
+       let temp = table.getRow(index);
+       Logger.log(temp);
+       Logger.log(temp.getText());
+     })
+ }
+  function maker(){
+     const body = DocumentApp.getActiveDocument().getBody();
+     const cells = ["A","B","C","D","E"];
+     body.appendTable([cells]);
+ }
+  function makeTable() {
+   const doc = DocumentApp.getActiveDocument();
+   const body = doc.getBody();
+   Logger.log(body);
+   const arr = [];
+   for(let x=0;x<4;x++){
+     const row = [];
+     for(let y=0;y<5;y++){
+       row.push(x + '-' + y);
+     }
+     arr.push(row);
+     Logger.log(row);
+   }
+   body.appendTable(arr);
+   Logger.log(arr);
+ }
